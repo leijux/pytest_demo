@@ -36,6 +36,7 @@ def assert_result(result, expected, snapshot=None, schema_name="schema.json"):
     :param schema_name: schema name default "schema.json"
     :return:
     """
+    # TODO: __tracebackhide__ = True
     assert result.response.status_code == expected.except_code
     assert result.success == expected.except_result, result.error
     if expected.except_msg:
