@@ -1,0 +1,7 @@
+test_user_info:
+  # 用户名,密码,期望结果,期望返回码,期望返回信息
+  - [ username, password, except_result, except_code, except_msg ]
+  - [ "leijuxx@outlook.com","3bv6s69.AH.TKY-",True,200,"leijux" ]
+  - [ "test", "123456", False, 401, null ]
+  - [ "测试test", "123456", False, 401, null ]
+
