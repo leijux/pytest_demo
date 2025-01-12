@@ -2,13 +2,13 @@
 
 version: "3"
 
-dotenv: [ ".env" ]
+dotenv: [".env"]
 
 tasks:
   run-all-test:
     desc: "运行全部测试"
     #    deps: [init-windows-venv]
-    cmd: pytest --alluredir reports/allure_results
+    cmd: pytest -q --alluredir reports/allure_results
 
   run-fail-test:
     desc: "仅运行失败的测试用例"
@@ -24,7 +24,7 @@ tasks:
 
   init-windows-venv:
     desc: "venv环境初始化"
-    platforms: [ windows ]
+    platforms: [windows]
     cmds:
       - pwsh ./venv/Scripts/activate.ps1
     silent: true
