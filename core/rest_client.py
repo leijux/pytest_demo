@@ -1,76 +1,68 @@
 import logging
 import allure
+import httpx
 import pytest
-import requests
 import utils
 import json as complexjson
-from requests.exceptions import RequestException, Timeout, HTTPError
 
 logger = logging.getLogger(__name__)
 
 
 class RestClient:
-    def __init__(self, base_url):
-        self.base_url = base_url
-        self.session = requests.session()
+    def __init__(self, http_client=httpx.AsyncClient):
+        self.http_client = http_client
 
-    def get(self, path, **kwargs):
-        return self._request(path, "GET", **kwargs)
+    async def get(self, path, **kwargs) -> httpx.Response:
+        return await self._request(path, "GET", **kwargs)
 
-    def post(self, path, data=None, json=None, **kwargs):
-        return self._request(path, "POST", data, json, **kwargs)
+    async def post(self, path, data=None, json=None, **kwargs) -> httpx.Response:
+        return await self._request(path, "POST", data, json, **kwargs)
 
-    def put(self, path, data=None, **kwargs):
-        return self._request(path, "PUT", data, **kwargs)
+    async def put(self, path, data=None, **kwargs) -> httpx.Response:
+        return await self._request(path, "PUT", data, **kwargs)
 
-    def delete(self, path, **kwargs):
-        return self._request(path, "DELETE", **kwargs)
+    async def delete(self, path, **kwargs) -> httpx.Response:
+        return await self._request(path, "DELETE", **kwargs)
 
-    def patch(self, path, data=None, **kwargs):
-        return self._request(path, "PATCH", data, **kwargs)
+    async def patch(self, path, data=None, **kwargs) -> httpx.Response:
+        return await self._request(path, "PATCH", data, **kwargs)
 
-    def _request(self, path, method, data=None, json=None, **kwargs):
-        url = self.base_url + path
-
+    async def _request(self, path, method, data=None, json=None, **kwargs) -> httpx.Response:
         headers = kwargs.get("headers")
         params = kwargs.get("params")
         files = kwargs.get("files")
         cookies = kwargs.get("cookies")
 
-        request_log(url, method, data, json, params, headers, files, cookies)
+        request_log(self.http_client.base_url.join(path), method, data, json, params, headers, files, cookies)
+        __tracebackhide__ = True
+
         try:
             if method == "GET":
-                response = self.session.get(url, **kwargs)
+                response = await self.http_client.get(path, **kwargs)
             elif method == "POST":
-                response = requests.post(url, data, json, **kwargs)
+                response = await self.http_client.post(path, data=data, json=json, **kwargs)
             elif method == "PUT":
-                if json:
-                    # PUT 和 PATCH 中没有提供直接使用json参数的方法，因此需要用data来传入
-                    data = complexjson.dumps(json)
-                response = self.session.put(url, data, **kwargs)
+                response = await self.http_client.put(path, json=json, **kwargs)
             elif method == "DELETE":
-                response = self.session.delete(url, **kwargs)
+                response = await self.http_client.delete(path, **kwargs)
             elif method == "PATCH":
-                if json:
-                    data = complexjson.dumps(json)
-                response = self.session.patch(url, data, **kwargs)
+                response = await self.http_client.patch(path, json=json, **kwargs)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
             response_log(response)
-            return response
 
-        except HTTPError as http_err:
-            pytest.fail(f"HTTP error occurred: {http_err}")
-        except Timeout as timeout_err:
-            pytest.fail(f"Timeout occurred: {timeout_err}")
-        except RequestException as req_err:
+        except httpx.RequestError as req_err:
             pytest.fail(f"Request error occurred: {req_err}")
-        except Exception as err:
-            pytest.fail(f"Unexpected error: {err}")
+        except httpx.TimeoutException as timeout_err:
+            pytest.fail(f"Timeout occurred: {timeout_err}")
+        except Exception as e:
+            pytest.fail(f"Unexpected error: {e}")
+        else:
+            return response
 
 
 def request_log(url, method, data=None, json=None, params=None, headers=None, files=None, cookies=None):
-    logger.info(f"http request {method} {url}")
+    logger.debug(f"http request {method} {url}")
 
     if headers:
         logger.debug(f"接口请求头: {utils.json_dumps(headers)}")
@@ -113,6 +105,12 @@ th {
     background-color: #f2f2f2;
     text-align: left;
 }
+.headers td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 1000px;
+}
 pre {
     background-color: #2d2d2d;
     color: #fff;
@@ -125,15 +123,24 @@ pre {
 """
 
 
-def response_log(response):
+def response_log(response: httpx.Response):
     method = response.request.method
     status_code = response.status_code
+
     request_url = response.request.url
     request_headers = response.request.headers
-    request_data = utils.json_dumps(response.request.body)  # 请求数据
+    request_data = response.request.content
+    try:
+        request_data = request_data.decode("utf-8") if type(request_data) is bytes else request_data
+    except UnicodeDecodeError:
+        request_data = request_data
 
     response_headers = response.headers
-    response_data = utils.json_dumps(response.json())  # 响应数据，转换为 JSON
+
+    try:
+        response_data = utils.json_dumps(response.json())  # 响应数据，转换为 JSON
+    except complexjson.decoder.JSONDecodeError:
+        response_data = response.text
 
     html_content = f"""
     <style>
@@ -152,7 +159,7 @@ def response_log(response):
 
         <!-- 请求头 -->
         <h2>Request Headers</h2>
-        <table>
+        <table class="headers">
             {''.join([f"<tr><th>{key}</th><td>{value}</td></tr>" for key, value in request_headers.items()])}
         </table>
 
@@ -164,7 +171,7 @@ def response_log(response):
 
         <!-- 响应头 -->
         <h2>Response Headers</h2>
-        <table>
+        <table class="headers">
             {''.join([f"<tr><th>{key}</th><td>{value}</td></tr>" for key, value in response_headers.items()])}
         </table>
 
@@ -175,4 +182,5 @@ def response_log(response):
         </table>
     </div>
     """
-    allure.attach(body=html_content, name=f"{method} {request_url}", attachment_type=allure.attachment_type.HTML)
+    allure.attach(body=html_content, name=f"{method} {request_url} {status_code}",
+                  attachment_type=allure.attachment_type.HTML)

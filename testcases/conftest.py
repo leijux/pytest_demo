@@ -1,18 +1,20 @@
+import asyncio
 import base64
 import logging
-import os
 import pathlib
 import time
-
 import allure
+import httpx
 import pytest
 
+from operation import UserOpn
+
 import utils
-from operation.user import UserOpn
-from utils import test_data, TestData
+from utils import test_data, TestData, env
 
 logger = logging.getLogger(__name__)
 
+pytest.register_assert_rewrite('utils.assertions')
 
 def pytest_configure(config):
     """
@@ -46,7 +48,10 @@ def pytest_generate_tests(metafunc):
         else:
             # 获取字段名（头部）和数据值（内容）
             field_names = data[0]
-            values = data[1:]
+            timestamp = utils.timestamp()
+            values = [
+                list(map(lambda x: x.format(timestamp=timestamp) if type(x) == str else x, value)) for
+                value in data[1:]]
 
             # 将数据值映射为字典列表
             objects = [TestData(**dict(zip(field_names, value))) for value in values]
@@ -56,15 +61,21 @@ def pytest_generate_tests(metafunc):
 
 
 @pytest.fixture(scope="session")
-@allure.title("获取 basic_authorization")
-def basic_authorization():
+@allure.title("获取 basic_auth")
+def basic_auth() -> str:
     user_data = test_data.get_data(pathlib.Path(__file__).parent / "base_data.yaml")["init_admin_user"]
     username = user_data["username"]
     password = user_data["password"]
-    basic_authorization = base64.b64encode(f"{username}:{password}".encode())
+    basic_authorization = base64.b64encode(f"{username}:{password}".encode()).decode()
     return basic_authorization
 
 
-@pytest.fixture(scope="session")
-def user():
-    return UserOpn(os.getenv("BASEURL_API_URL"))
+@pytest.fixture(scope="function")
+def http_client() -> httpx.AsyncClient:
+    return httpx.AsyncClient()
+
+
+@pytest.fixture(scope="function")
+def user_opn(http_client: httpx.AsyncClient) -> UserOpn:
+    http_client.base_url = env.BASE_URL
+    return UserOpn(http_client)

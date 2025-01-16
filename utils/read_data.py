@@ -1,3 +1,5 @@
+import asyncio
+import http
 import logging
 import pytest
 import yaml
@@ -65,6 +67,7 @@ class DataCache:
     def get_data(self, data_file_path):
         try:
             if data_file_path in self.cache:
+                logger.debug(f"加载缓存数据 {data_file_path}")
                 return self.cache[data_file_path]
             else:
                 yaml_data = load_yaml(data_file_path)
@@ -73,3 +76,21 @@ class DataCache:
             pytest.skip(str(ex))
         else:
             return yaml_data
+
+
+test_data = DataCache()
+
+
+class TestData:
+    def __init__(self, **kwargs):
+        self.except_success: None | bool = None
+        self.except_status_code: None | http.HTTPStatus = None
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def __str__(self):
+        return f"TestData({', '.join(f'{k}={v}' for k, v in self.__dict__.items())})"
+
+    def __repr__(self):
+        return self.__str__()

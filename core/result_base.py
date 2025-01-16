@@ -1,3 +1,4 @@
+import httpx
 import requests
 from dataclasses import dataclass
 
@@ -9,7 +10,7 @@ class ResultBase:
     """
     响应结果的封装类
     """
-    response: requests.Response = None
+    response: httpx.Response = None
 
     msg: str = None
     success: bool = False

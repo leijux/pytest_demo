@@ -1,7 +1,11 @@
 test_user_info:
-  # 用户名,密码,期望结果,期望返回码,期望返回信息
-  - [ username, password, except_result, except_code, except_msg ]
-  - [ "leijuxx@outlook.com","3bv6s69.AH.TKY-",True,200,"leijux" ]
-  - [ "test", "123456", False, 401, null ]
-  - [ "测试test", "123456", False, 401, null ]
+  - [ username,            password,    except_success, except_status_code, except_msg ]
+  #  - [ "leijuxx@outlook.com", "3bv6s69.AH.TKY-", True,  200, "leijux" ]
+  - [ "leiju",             "leiju,,4",  True,          200,                "leiju" ]
+  - [ "测试test-{timestamp}", "123456", False,         401,                "user does not exist [uid: 0, name: 测试test-{timestamp}]" ]
+  - [ "",                  "123456",    False,         401,                "user does not exist [uid: 0, name: ]" ]
+  - [ "测试test-{timestamp}", "",       False,         401,                "user does not exist [uid: 0, name: 测试test-{timestamp}]" ]
 
+test_user_info_with_basic_auth:
+  - [ basic_auth,          except_success, except_status_code, except_msg ]
+  - [ "test-{timestamp}",  False,         401,                "user does not exist [uid: 0, name: ]" ]

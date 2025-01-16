@@ -1,34 +1,39 @@
-import http
 import logging
+import multiprocessing
 
 import allure
+import httpx
+import requests
 
-from core.result_base import ResultBase
-from api.user import User
+import utils
+from core import ResultBase
+from api import User
 
 logger = logging.getLogger(__name__)
 
 
 class UserOpn:
-    def __init__(self, base_url):
-        self.api = User(base_url)
+    def __init__(self, http_client: httpx.AsyncClient):
+        self.api = User(http_client)
 
     @allure.step("获取用户信息")
-    def get_user_info(self, basic_authorization) -> ResultBase:
-        logger.info("获取当前用户信息")
+    async def get_user_info(self, basic_auth: str) -> ResultBase:
         result = ResultBase()
         header = {
-            "authorization": f"Basic {basic_authorization}"
+            "authorization": f"Basic {basic_auth}"
         }
 
-        res = self.api.user_info(headers=header)
+        resp = await self.api.user_info(headers=header)
 
-        if res.status_code == http.HTTPStatus.OK:
-            result.success = True
-            result.msg = res.json()["username"]
+        try:
+            result.msg = resp.json()["username"]
+        except Exception as e:
+            result.error = str(e)
+            result.msg = resp.json()["message"]
         else:
-            result.error = f"接口返回码 {res.status_code} 返回信息 {res.json()['message']}"
-        result.response = res
+            result.success = True
+
+        result.response = resp
         return result
 
     # def get_all_user_info(self):
@@ -122,3 +127,9 @@ class UserOpn:
     #     result.response = res
     #     logger.info("登录用户 ==>> 返回结果 ==>> {}".format(result.response.text))
     #     return result
+
+
+if __name__ == "__main__":
+    multiprocessing.set_start_method('spawn')
+    multiprocessing.freeze_support()
+    UserOpn(utils.env.BASE_URL).get_user_info()
