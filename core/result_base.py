@@ -16,6 +16,7 @@ class ResultBase:
     success: bool = False
 
     error: str = None
+    code: int | str = None
 
     @property
     def schema(self):
@@ -23,3 +24,13 @@ class ResultBase:
         :return: 请求体的json数据的 schema 字符串
         """
         return generate_json_schema(self.response.json())
+
+    @property
+    def content(self) -> tuple[str, str]:
+        """
+        :return: 请求体的json数据
+        """
+        try:
+            return generate_json_schema(self.response.json()), "json"
+        except:
+            return self.response.text, "txt"

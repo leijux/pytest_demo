@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class RestClient:
-    def __init__(self, http_client=httpx.AsyncClient):
+    def __init__(self, http_client: httpx.AsyncClient):
         self.http_client = http_client
 
     async def get(self, path, **kwargs) -> httpx.Response:
@@ -33,7 +33,8 @@ class RestClient:
         files = kwargs.get("files")
         cookies = kwargs.get("cookies")
 
-        request_log(self.http_client.base_url.join(path), method, data, json, params, headers, files, cookies)
+        request_log(self.http_client.base_url.join(path), method,
+                    data, json, params, headers, files, cookies)
         __tracebackhide__ = True
 
         try:
@@ -131,7 +132,8 @@ def response_log(response: httpx.Response):
     request_headers = response.request.headers
     request_data = response.request.content
     try:
-        request_data = request_data.decode("utf-8") if type(request_data) is bytes else request_data
+        request_data = request_data.decode(
+            "utf-8") if type(request_data) is bytes else request_data
     except UnicodeDecodeError:
         request_data = request_data
 
@@ -172,7 +174,8 @@ def response_log(response: httpx.Response):
         <!-- 响应头 -->
         <h2>Response Headers</h2>
         <table class="headers">
-            {''.join([f"<tr><th>{key}</th><td>{value}</td></tr>" for key, value in response_headers.items()])}
+            {''.join([f"<tr><th>{key}</th><td>{value}</td></tr>" for key,
+                     value in response_headers.items()])}
         </table>
 
         <!-- 响应数据 -->

@@ -20,11 +20,11 @@ tasks:
 
   show-repost:
     desc: "查看测试报告"
-    cmd: allure serve .\reports\allure_results\
+    cmd: allure serve reports/allure_results/
 
   init-windows-venv:
     desc: "venv环境初始化"
     platforms: [windows]
     cmds:
-      - pwsh ./venv/Scripts/activate.ps1
+      - pwsh .venv/Scripts/activate.ps1
     silent: true
