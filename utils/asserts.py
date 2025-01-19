@@ -28,9 +28,9 @@ def assert_result(result: ResultBase, expect: TestData, snapshot=None, schema_na
             result.code} is not equal {expect.except_code}"
 
     if snapshot:
-        content, content_type = result.content
+        content, content_type = result.content()
         if not content:
             return
-        schema_name = schema_name if schema_name is not None else f"content.{
+        schema_name = f"schema_name.{content_type}" if schema_name is not None else f"content.{
             content_type}"
         snapshot.assert_match(content, schema_name)
