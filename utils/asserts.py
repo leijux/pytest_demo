@@ -14,7 +14,7 @@ def assert_result(result: ResultBase, expect: TestData, snapshot=None, schema_na
     """
     __tracebackhide__ = True
     assert result.response.status_code == expect.except_status_code, f"{
-        result.response.status_code} is not equal {result.response.status_code}"
+        expect.except_status_code} is not equal {result.response.status_code}"
 
     assert result.success == expect.except_success, f"{
         expect.except_success} is not equal {result.success}, err: {result.error}"
