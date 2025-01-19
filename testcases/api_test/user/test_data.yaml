@@ -1,8 +1,13 @@
 test_user_info:
-  - [ case_name,                basic_auth, username,            password,    except_success, except_status_code, except_msg ]
+  #prettier-ignore
+  - [ case_name,                 username,            password,    except_success, except_status_code, except_msg ]
   #  - [ "leijuxx@outlook.com", "3bv6s69.AH.TKY-", True,  200, "leijux" ]
-  - [ "正确用户名密码_登录成功", null,       "leiju",             "leiju,,4",  True,          200,                "leiju" ]
-  - [ "错误用户名_登录失败",     null,       "测试test-{timestamp}", "123456", False,         401,                "user does not exist [uid: 0, name: 测试test-{timestamp}]" ]
-  - [ "用户名为空_登录失败",     null,       "",                  "123456",    False,         401,                "user does not exist [uid: 0, name: ]" ]
-  - [ "密码为空_登录失败",       null,       "测试test-{timestamp}", "",       False,         401,                "user does not exist [uid: 0, name: 测试test-{timestamp}]" ]
-  - [ "用户名密码均为空_登录失败", "test-{timestamp}", null, null,  False,         401,                "user does not exist [uid: 0, name: ]" ]
+  - [ "正确用户名密码_登录成功",     "leiju",             "leiju,,4",  True,          200,                "leiju" ]
+
+test_user_info_with_basic_auth:
+  #prettier-ignore
+  - [ case_name,                basic_auth, username,            password,    except_success, except_status_code, except_msg ]
+  - [ "错误用户名_登录失败",       null,        "测试test-{timestamp}", "123456", False,         401,                "user does not exist [uid: 0, name: 测试test-{timestamp}]" ]
+  - [ "用户名为空_登录失败",     null,           "",                  "123456",    False,         401,                "user does not exist [uid: 0, name: ]" ]
+  - [ "密码为空_登录失败",       null,           "测试test-{timestamp}", "",       False,         401,                "user does not exist [uid: 0, name: 测试test-{timestamp}]" ]
+  - [ "用户名密码均为空_登录失败", "test-{timestamp}",null, null,              False,         401,                "user does not exist [uid: 0, name: ]" ]
