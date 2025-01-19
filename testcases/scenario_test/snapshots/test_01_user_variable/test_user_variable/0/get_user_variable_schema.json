@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "owner_id": {
+            "type": "integer"
+        },
+        "repo_id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "data": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "data",
+        "name",
+        "owner_id",
+        "repo_id"
+    ]
+}
