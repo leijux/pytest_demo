@@ -1,9 +1,9 @@
-import asyncio
 import http
 import logging
 import pytest
 import yaml
 import json
+from dataclasses import dataclass
 from multiprocessing import Manager
 from configparser import ConfigParser
 
@@ -47,7 +47,8 @@ def load_ini(file_path):
         config = MyConfigParser()
         config.read(file_path, encoding="utf-8")
 
-        data = {section: dict(config.items(section)) for section in config.sections()}
+        data = {section: dict(config.items(section))
+                for section in config.sections()}
         logger.debug(f"成功读取 INI 数据: {data}")
         return data
     except Exception as e:
@@ -81,6 +82,7 @@ class DataCache:
 test_data = DataCache()
 
 
+@dataclass
 class TestData:
     def __init__(self, **kwargs):
         self.except_success: None | bool = None
@@ -88,9 +90,3 @@ class TestData:
 
         for key, value in kwargs.items():
             setattr(self, key, value)
-
-    def __str__(self):
-        return f"TestData({', '.join(f'{k}={v}' for k, v in self.__dict__.items())})"
-
-    def __repr__(self):
-        return self.__str__()

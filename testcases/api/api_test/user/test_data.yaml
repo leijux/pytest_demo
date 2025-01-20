@@ -1,8 +1,8 @@
 test_user_info:
   #prettier-ignore
   - [ case_name,                 username,            password,    except_success, except_status_code, except_msg ]
-  #  - [ "leijuxx@outlook.com", "3bv6s69.AH.TKY-", True,  200, "leijux" ]
-  - [ "正确用户名密码_登录成功",     "leiju",             "leiju,,4",  True,          200,                "leiju" ]
+  #  - [ "", "", True,  200, "leijux" ]
+  - [ "正确用户名密码_登录成功",     "leiju",             "",  True,          200,                "leiju" ]
 
 test_user_info_with_basic_auth:
   #prettier-ignore

@@ -4,7 +4,7 @@ from utils import TestData
 
 
 @allure.step("assert")
-def assert_result(result: ResultBase, expect: TestData, snapshot=None, schema_name=None):
+def assert_result(result: ResultBase, expected: TestData, snapshot=None, schema_name=None):
     """
     执行断言
     :param result: 请求结果
@@ -13,19 +13,19 @@ def assert_result(result: ResultBase, expect: TestData, snapshot=None, schema_na
     :param schema_name: schema名称
     """
     __tracebackhide__ = True
-    assert result.response.status_code == expect.except_status_code, f"{
-        expect.except_status_code} is not equal {result.response.status_code}"
+    assert result.response.status_code == expected.except_status_code, f"{
+        expected.except_status_code} is not equal {result.response.status_code}"
 
-    assert result.success == expect.except_success, f"{
-        expect.except_success} is not equal {result.success}, err: {result.error}"
+    assert result.success == expected.except_success, f"{
+        expected.except_success} is not equal {result.success}, err: {result.error}"
 
-    if hasattr(expect, "except_msg"):
-        assert result.msg == expect.except_msg, f"{
-            result.msg} is not equal {expect.except_msg}"
+    if hasattr(expected, "except_msg"):
+        assert result.msg == expected.except_msg, f"{
+            result.msg} is not equal {expected.except_msg}"
 
-    if hasattr(expect, "except_code"):
-        assert result.code == expect.except_code, f" {
-            result.code} is not equal {expect.except_code}"
+    if hasattr(expected, "except_code"):
+        assert result.code == expected.except_code, f" {
+            result.code} is not equal {expected.except_code}"
 
     if snapshot:
         content, content_type = result.content()

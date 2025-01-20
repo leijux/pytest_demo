@@ -4,7 +4,7 @@ import allure
 import httpx
 
 from core import ResultBase
-from api import User
+from models.api import User
 
 logger = logging.getLogger(__name__)
 

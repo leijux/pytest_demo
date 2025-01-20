@@ -1,5 +1,4 @@
 import httpx
-import requests
 from dataclasses import dataclass
 
 from utils.schema import generate_json_schema

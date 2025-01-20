@@ -1,6 +1,4 @@
 # 初始数据
 init_admin_user:
-  #  username: "leijuxx@outlook.com"
-  #  password: "3bv6s69.AH.TKY-"
   username: 'leiju'
-  password: 'leiju,,4'
+  password: ''

@@ -2,15 +2,13 @@ import base64
 import logging
 import pathlib
 import time
-from typing import AsyncGenerator
 import allure
 import httpx
 import pytest
 import pytest_asyncio
-
-from operation import UserOpn
-
 import utils
+
+from typing import AsyncGenerator
 from utils import test_data, TestData, env
 
 logger = logging.getLogger(__name__)
@@ -48,7 +46,7 @@ def pytest_generate_tests(metafunc):
             test_module_dir / "test_data.yaml").get(test_name)
 
         if type(data) == dict:
-            metafunc.parametrize("test_data", data)
+            metafunc.parametrize("test_data", [TestData(**data)], ids=[0])
         elif type(data) == list and len(data) >= 2:
             # 获取字段名（头部）和数据值（内容）
             field_names = data[0][1:]
@@ -84,9 +82,3 @@ def basic_auth() -> str:
 async def http_client() -> AsyncGenerator[httpx.AsyncClient, None]:
     async with httpx.AsyncClient() as client:
         yield client
-
-
-@pytest.fixture(scope="function")
-def user_opn(http_client: httpx.AsyncClient) -> UserOpn:
-    http_client.base_url = env.BASE_URL
-    return UserOpn(http_client)
