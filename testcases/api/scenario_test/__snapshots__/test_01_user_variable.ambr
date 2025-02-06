@@ -1,0 +1,28 @@
+# serializer version: 1
+# name: TestUserVariable.test_user_variable[test]
+  '''
+  {
+      "properties": {
+          "data": {
+              "type": "string"
+          },
+          "name": {
+              "type": "string"
+          },
+          "owner_id": {
+              "type": "integer"
+          },
+          "repo_id": {
+              "type": "integer"
+          }
+      },
+      "required": [
+          "data",
+          "name",
+          "owner_id",
+          "repo_id"
+      ],
+      "type": "object"
+  }
+  '''
+# ---
