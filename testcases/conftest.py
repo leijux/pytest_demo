@@ -9,11 +9,11 @@ import pytest_asyncio
 import utils
 
 from typing import AsyncGenerator
-from utils import test_data, TestData, env
-
-logger = logging.getLogger(__name__)
+from utils import test_data, DataTest, env
 
 pytest.register_assert_rewrite('utils.asserts')
+
+logger = logging.getLogger(__name__)
 
 
 def pytest_configure(config):
@@ -46,7 +46,10 @@ def pytest_generate_tests(metafunc):
             test_module_dir / "test_data.yaml").get(test_name)
 
         if type(data) == dict:
-            metafunc.parametrize("test_data", [TestData(**data)], ids=[0])
+            case_name = data.get("case_name", "test")
+
+            metafunc.parametrize(
+                "test_data", [DataTest(**data)], ids=[case_name])
         elif type(data) == list and len(data) >= 2:
             # 获取字段名（头部）和数据值（内容）
             field_names = data[0][1:]
@@ -59,7 +62,7 @@ def pytest_generate_tests(metafunc):
                 values.append(list(map(lambda x: x.format(
                     timestamp=timestamp) if type(x) == str else x, value[1:])))
             # 将数据值映射为字典列表
-            objects = [TestData(**dict(zip(field_names, value)))
+            objects = [DataTest(**dict(zip(field_names, value)))
                        for value in values]
 
             # 参数化测试
@@ -73,12 +76,13 @@ def basic_auth() -> str:
         __file__).parent / "base_data.yaml")["init_admin_user"]
     username = user_data["username"]
     password = user_data["password"]
-    basic_authorization = base64.b64encode(
+    basic_auth = base64.b64encode(
         f"{username}:{password}".encode()).decode()
-    return basic_authorization
+    return basic_auth
 
 
 @pytest_asyncio.fixture(scope="function")
+@allure.title("创建http客户端")
 async def http_client() -> AsyncGenerator[httpx.AsyncClient, None]:
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(base_url=env.BASE_URL) as client:
         yield client
