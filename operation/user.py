@@ -1,12 +1,8 @@
-import logging
-
 import allure
 import httpx
 
 from core import ResultBase
 from models.api import User
-
-logger = logging.getLogger(__name__)
 
 
 class UserOpn:
@@ -26,14 +22,11 @@ class UserOpn:
 
         try:
             result.msg = resp.json()["username"]
+            result.success = True
         except Exception as e:
             result.error = str(e)
             result.msg = resp.json()["message"]
-        else:
-            result.success = True
-
         result.response = resp
-        logger.debug(f"resp text {resp.text}")
         return result
 
     @allure.step("创建用户变量")
@@ -46,18 +39,17 @@ class UserOpn:
         json = {
             "value": value
         }
+
         resp = await self.api.user_variable(variable_name, headers=header, json=json, method="post")
 
         try:
             resp.raise_for_status()
+            result.success = True
         except Exception as e:
             result.msg = resp.json()["message"]
             result.error = str(e)
-        else:
-            result.success = True
 
         result.response = resp
-        logger.debug(f"response text {resp.text}")
         return result
 
     @allure.step("更新用户变量")
@@ -76,14 +68,12 @@ class UserOpn:
 
         try:
             resp.raise_for_status()
+            result.success = True
         except Exception as e:
             result.msg = resp.json()["message"]
             result.error = str(e)
-        else:
-            result.success = True
 
         result.response = resp
-        logger.debug(f"response text {resp.text}")
         return result
 
     @allure.step("删除当前用户创建的变量")
@@ -97,16 +87,15 @@ class UserOpn:
 
         try:
             resp.raise_for_status()
+            result.success = True
         except Exception as e:
             result.msg = resp.json()["message"]
             result.error = str(e)
-        else:
-            result.success = True
 
         result.response = resp
-        logger.debug(f"response text {resp.text}")
         return result
 
+    @allure.step("查询用户变量")
     async def get_user_variable(self, variable_name: str, basic_auth: str = None) -> ResultBase:
         result = ResultBase()
         header = {
@@ -118,11 +107,10 @@ class UserOpn:
         try:
             resp.raise_for_status()
             result.data = resp.json()
+            result.success = True
         except Exception as e:
             result.msg = resp.json()["message"]
             result.error = str(e)
-        else:
-            result.success = True
+
         result.response = resp
-        logger.debug(f"response text {resp.text}")
         return result
