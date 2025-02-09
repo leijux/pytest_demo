@@ -1,10 +1,11 @@
 import allure
 from core import ResultBase
-from utils import TestData
+from utils import DataTest
+import syrupy
 
 
 @allure.step("assert")
-def assert_result(result: ResultBase, expected: TestData, snapshot=None, schema_name=None):
+def assert_result(result: ResultBase, expected: DataTest, snapshot=None):
     """
     执行断言
     :param result: 请求结果
@@ -31,6 +32,5 @@ def assert_result(result: ResultBase, expected: TestData, snapshot=None, schema_
         content, content_type = result.content()
         if not content:
             return
-        schema_name = f"schema_name.{content_type}" if schema_name is not None else f"content.{
-            content_type}"
-        snapshot.assert_match(content, schema_name)
+
+        assert content == snapshot

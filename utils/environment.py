@@ -1,9 +1,10 @@
 import os
+from typing import Optional
 
 
 class Environment:
     def __init__(self):
-        self._base_url: str | None = os.getenv("BASE_URL")
+        self._base_url: Optional[str] = os.getenv("BASE_URL")
 
         for key, value in self.__dict__.items():
             if value is None:

@@ -3,9 +3,10 @@ import logging
 import pytest
 import yaml
 import json
-from dataclasses import dataclass
+
 from multiprocessing import Manager
 from configparser import ConfigParser
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -82,11 +83,16 @@ class DataCache:
 test_data = DataCache()
 
 
-@dataclass
-class TestData:
+class DataTest:
     def __init__(self, **kwargs):
-        self.except_success: None | bool = None
-        self.except_status_code: None | http.HTTPStatus = None
+        self.except_success:  Optional[bool] = None
+        self.except_status_code: Optional[http.HTTPStatus] = None
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+    def __str__(self):
+        return f"TestData({', '.join(f'{k}={v}' for k, v in self.__dict__.items())})"
+
+    def __repr__(self):
+        return self.__str__()
