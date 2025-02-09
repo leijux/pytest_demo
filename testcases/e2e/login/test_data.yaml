@@ -1,0 +1,7 @@
+test_login:
+  username: leiju
+  password: leiju
+  aria: |
+    - menu:
+      - img "leiju"
+      - text: leiju
