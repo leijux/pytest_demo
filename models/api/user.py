@@ -1,5 +1,4 @@
 import httpx
-import requests
 
 from core import RestClient
 
