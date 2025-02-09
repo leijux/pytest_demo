@@ -2,6 +2,7 @@ import httpx
 from dataclasses import dataclass
 
 from utils.schema import generate_json_schema
+from typing import Optional
 
 
 @dataclass
@@ -9,13 +10,13 @@ class ResultBase:
     """
     响应结果的封装类
     """
-    response: httpx.Response = None
+    response: Optional[httpx.Response] = None
 
-    msg: str = None
-    success: bool = False
+    msg: Optional[str] = None
+    success: Optional[bool] = False
 
-    error: str = None
-    code: int | str = None
+    error: Optional[str] = None
+    code: Optional[int | str] = None
 
     def schema(self):
         """
