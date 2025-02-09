@@ -9,8 +9,8 @@ from utils.asserts import assert_result
 @allure.feature("用户模块")
 @allure.story("用户变量")
 @allure.link("https://gitea.com/api/swagger#/user/createUserVariable", name="to swagger")
+@pytest.mark.asyncio(loop_scope="class")
 @pytest.mark.multiple
-@pytest.mark.asyncio(loop_scope="module")
 class TestUserVariable:
 
     @allure.title("验证用户变量的增删改查")
@@ -34,11 +34,11 @@ class TestUserVariable:
             test_data.variable_name, basic_auth=basic_auth)
         assert get_result.response.status_code == 200
         assert get_result.data["data"] == test_data.value
-        snapshot.assert_match(get_result.schema(),
-                              "get_user_variable_schema.json")
+        assert get_result.schema() == snapshot
 
         update_result = await user_opn.update_user_variable(
-            test_data.variable_name, value=test_data.update_value, new_name=test_data.update_name, basic_auth=basic_auth)
+            test_data.variable_name, value=test_data.update_value, new_name=test_data.update_name,
+            basic_auth=basic_auth)
         assert_result(update_result, test_data)
 
         delete_result = await user_opn.delete_user_variable(

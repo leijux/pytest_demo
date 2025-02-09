@@ -10,8 +10,8 @@ from utils.asserts import assert_result
 @allure.feature("用户模块")
 @allure.story("/api/v1/user")
 @allure.link("https://gitea.com/api/swagger#/user/userGetCurrent", name="to swagger")
+@pytest.mark.asyncio(loop_scope="class")
 @pytest.mark.single
-@pytest.mark.asyncio(loop_scope="module")
 class TestUserInfo:
 
     @allure.title("获取用户信息 {param_id}")

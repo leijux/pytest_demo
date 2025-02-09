@@ -1,11 +1,11 @@
 import httpx
-import pytest
+import pytest_asyncio
+import allure
 
 from operation.user import UserOpn
-from utils import env
 
 
-@pytest.fixture(scope="function")
-def user_opn(http_client: httpx.AsyncClient) -> UserOpn:
-    http_client.base_url = env.BASE_URL
+@pytest_asyncio.fixture(scope="function")
+@allure.title("创建用户操作对象")
+async def user_opn(http_client: httpx.AsyncClient) -> UserOpn:
     return UserOpn(http_client)
