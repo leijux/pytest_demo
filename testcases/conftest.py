@@ -81,8 +81,16 @@ def basic_auth() -> str:
     return basic_auth
 
 
+@pytest_asyncio.fixture(scope="session")
+@allure.title("创建http transport")
+async def http_transport():
+    transport = httpx.AsyncHTTPTransport(retries=3)
+    yield transport
+    await transport.aclose()
+
+
 @pytest_asyncio.fixture(scope="function")
 @allure.title("创建http客户端")
-async def http_client() -> AsyncGenerator[httpx.AsyncClient, None]:
-    async with httpx.AsyncClient(base_url=env.BASE_URL) as client:
+async def http_client(http_transport) -> AsyncGenerator[httpx.AsyncClient, None]:
+    async with httpx.AsyncClient(base_url=env.BASE_URL, transport=http_transport) as client:
         yield client
