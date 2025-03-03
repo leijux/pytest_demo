@@ -29,8 +29,6 @@ def assert_result(result: ResultBase, expected: DataTest, snapshot=None):
             result.code} is not equal {expected.except_code}"
 
     if snapshot:
-        content, content_type = result.content()
-        if not content:
-            return
-
-        assert content == snapshot
+        content, _ = result.content()
+        if content:
+            assert content == snapshot

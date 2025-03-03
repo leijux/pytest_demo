@@ -3,6 +3,7 @@ import httpx
 
 from core import ResultBase
 from models.api import User
+from typing import Optional
 
 
 class UserOpn:
@@ -10,7 +11,7 @@ class UserOpn:
         self.api = User(http_client)
 
     @allure.step("获取用户信息")
-    async def get_user_info(self, basic_auth: str = None) -> ResultBase:
+    async def get_user_info(self, basic_auth:  Optional[str] = None) -> ResultBase:
         result = ResultBase()
 
         header = {}
@@ -30,17 +31,16 @@ class UserOpn:
         return result
 
     @allure.step("创建用户变量")
-    async def create_user_variable(self, variable_name: str, value: set, basic_auth: str = None) -> ResultBase:
+    async def create_user_variable(self, variable_name: str, value: set, basic_auth: Optional[str] = None) -> ResultBase:
         result = ResultBase()
         header = {
             "authorization": f"Basic {basic_auth}",
-            "Content-Type": "application/json"
         }
-        json = {
+        body = {
             "value": value
         }
 
-        resp = await self.api.user_variable(variable_name, headers=header, json=json, method="post")
+        resp = await self.api.user_variable(variable_name, headers=header, json=body, method="post")
 
         try:
             resp.raise_for_status()
@@ -53,18 +53,18 @@ class UserOpn:
         return result
 
     @allure.step("更新用户变量")
-    async def update_user_variable(self, old_name: str, value: str, new_name: str = None, basic_auth: str = None) -> ResultBase:
+    async def update_user_variable(self, old_name: str, value: str, new_name: Optional[str] = None, basic_auth: Optional[str] = None) -> ResultBase:
         result = ResultBase()
         header = {
             "authorization": f"Basic {basic_auth}"
         }
-        json = {
+        body = {
             "value": value
         }
         if new_name:
-            json["name"] = new_name
+            body["name"] = new_name
 
-        resp = await self.api.user_variable(old_name, headers=header, json=json, method="PUT")
+        resp = await self.api.user_variable(old_name, headers=header, json=body, method="PUT")
 
         try:
             resp.raise_for_status()
@@ -77,7 +77,7 @@ class UserOpn:
         return result
 
     @allure.step("删除当前用户创建的变量")
-    async def delete_user_variable(self, variable_name: str, basic_auth: str = None) -> ResultBase:
+    async def delete_user_variable(self, variable_name: str, basic_auth: Optional[str] = None) -> ResultBase:
         result = ResultBase()
         header = {
             "authorization": f"Basic {basic_auth}"
@@ -96,7 +96,7 @@ class UserOpn:
         return result
 
     @allure.step("查询用户变量")
-    async def get_user_variable(self, variable_name: str, basic_auth: str = None) -> ResultBase:
+    async def get_user_variable(self, variable_name: str, basic_auth: Optional[str] = None) -> ResultBase:
         result = ResultBase()
         header = {
             "authorization": f"Basic {basic_auth}"
