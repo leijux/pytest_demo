@@ -3,5 +3,5 @@ test_user_variable:
   value: '1'
   update_name: 'test_2'
   update_value: '2'
-  except_success: True
-  except_status_code: 204
+  expect_success: True
+  expect_status_code: 204

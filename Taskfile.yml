@@ -1,30 +1,36 @@
 # https://taskfile.dev
 
-version: "3"
+version: '3'
 
-dotenv: [".env"]
+dotenv: ['.env']
 
 tasks:
   run-all-test:
-    desc: "运行全部测试"
-    #    deps: [init-windows-venv]
-    cmd: pytest -q --alluredir reports/allure_results
+    desc: '运行全部测试'
+    cmd: pytest -n auto --alluredir reports/allure_results
 
   run-fail-test:
-    desc: "仅运行失败的测试用例"
+    desc: '仅运行失败的测试用例'
     cmd: pytest --lf --alluredir reports/allure_results
 
-  install:
-    desc: "安装项目依赖包"
-    cmd: pip install -r requirements.txt
+  run-test:
+    cmd: pytest testcases/api/api_test/test.py -vv
 
-  show-repost:
-    desc: "查看测试报告"
+  install:
+    desc: '安装项目依赖包'
+    cmds:
+      - uv venv
+      - uv sync
+      - task: playwright-install
+
+  show-report:
+    desc: '查看测试报告'
     cmd: allure serve reports/allure_results/
 
-  init-windows-venv:
-    desc: "venv环境初始化"
-    platforms: [windows]
-    cmds:
-      - pwsh .venv/Scripts/activate.ps1
-    silent: true
+  playwright-codegen:
+    desc: '生成playwright测试代码'
+    cmd: playwright codegen $BASE_URL
+
+  playwright-install:
+    desc: '安装playwright依赖'
+    cmd: playwright install chromium

@@ -6,7 +6,8 @@ import json
 
 from multiprocessing import Manager
 from configparser import ConfigParser
-from typing import Optional
+from typing import Optional, Dict, Any
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class DataCache:
         self.manager = Manager()  # 创建一个多进程共享对象
         self.cache = self.manager.dict()  # 创建一个进程安全的共享字典
 
-    def get_data(self, data_file_path):
+    def get_data(self, data_file_path) -> Dict[str, Any]:
         try:
             if data_file_path in self.cache:
                 logger.debug(f"加载缓存数据 {data_file_path}")
@@ -74,25 +75,48 @@ class DataCache:
             else:
                 yaml_data = load_yaml(data_file_path)
                 self.cache[data_file_path] = yaml_data
-        except Exception as ex:
-            pytest.skip(str(ex))
-        else:
-            return yaml_data
+                return yaml_data
+        except Exception as e:
+            pytest.skip(f"测试数据加载错误: {str(e)}")
+
+    def _get_loader(self, suffix: str) -> callable:
+        return {
+            ".yaml": load_yaml,
+            ".yml": load_yaml,
+            ".json": load_json,
+            ".ini": load_ini
+        }[suffix.lower()]
 
 
-test_data = DataCache()
+@dataclass
+class TestData:
+    __test__ = False
 
-
-class DataTest:
     def __init__(self, **kwargs):
-        self.except_success:  Optional[bool] = None
-        self.except_status_code: Optional[http.HTTPStatus] = None
+        self.expect_success: Optional[bool] = None
+        self.expect_status_code: Optional[int] = None
 
+        # 过滤掉以 expect_ 开头的键后存入 _dict
+        self._dict = {k: v for k, v in kwargs.items() if not k.startswith("expect_")}
+
+        # 设置所有传入的键为实例属性（包括 expect_ 开头的）
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def __str__(self):
-        return f"TestData({', '.join(f'{k}={v}' for k, v in self.__dict__.items())})"
+    def __getitem__(self, key):
+        return self._dict[key]
 
-    def __repr__(self):
-        return self.__str__()
+    def keys(self):
+        return self._dict.keys()
+
+    def update(self, data: dict[str, Any]):
+        # 更新时自动过滤以 expect_ 开头的键
+        filtered_data = {k: v for k, v in data.items() if not k.startswith("expect_")}
+        self._dict.update(filtered_data)
+
+        # 设置所有传入的键为实例属性（包括 expect_ 开头的）
+        for key, value in data.items():
+            setattr(self, key, value)
+
+
+test_data = DataCache()

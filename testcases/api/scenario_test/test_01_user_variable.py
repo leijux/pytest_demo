@@ -2,7 +2,7 @@ import pytest
 import allure
 
 from utils.asserts import assert_result
-
+from utils.extensions import JSONSchemaSnapshotExtension
 
 @allure.severity(allure.severity_level.NORMAL)
 @allure.epic("业务场景测试")
@@ -16,16 +16,6 @@ class TestUserVariable:
     @allure.title("验证用户变量的增删改查")
     @allure.description("该用例验证用户变量的增删改查")
     async def test_user_variable(self, basic_auth, user_opn, test_data, snapshot):
-        """
-        This test verifies the creation, retrieval, update, and deletion of a user variable.
-
-        Args:
-            basic_auth: Basic authentication credentials.
-            user_opn: User operation object.
-            test_data: Test data containing variable names and values.
-            snapshot: Snapshot object for schema validation.
-        """
-
         create_result = await user_opn.create_user_variable(
             test_data.variable_name, value=test_data.value, basic_auth=basic_auth)
         assert_result(create_result, test_data)
@@ -34,7 +24,7 @@ class TestUserVariable:
             test_data.variable_name, basic_auth=basic_auth)
         assert get_result.response.status_code == 200
         assert get_result.data["data"] == test_data.value
-        assert get_result.schema() == snapshot
+        assert get_result.schema() == snapshot.use_extension(JSONSchemaSnapshotExtension)
 
         update_result = await user_opn.update_user_variable(
             test_data.variable_name, value=test_data.update_value, new_name=test_data.update_name,

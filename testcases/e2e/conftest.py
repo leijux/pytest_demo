@@ -24,7 +24,7 @@ def browser_context_args(browser_context_args):
             "cookies": [
                 {
                     "name": "lang",
-                    "value": "zh-CN",
+                    "value": "zh-CN", # 强制让登录页面显示中文
                     "domain": parse.urlparse(env.BASE_URL).hostname,
                     "path": "/"
                 },

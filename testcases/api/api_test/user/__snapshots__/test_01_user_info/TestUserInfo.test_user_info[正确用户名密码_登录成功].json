@@ -1,0 +1,99 @@
+{
+    "properties": {
+        "active": {
+            "type": "boolean"
+        },
+        "avatar_url": {
+            "type": "string"
+        },
+        "created": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "email": {
+            "type": "string"
+        },
+        "followers_count": {
+            "type": "integer"
+        },
+        "following_count": {
+            "type": "integer"
+        },
+        "full_name": {
+            "type": "string"
+        },
+        "html_url": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "is_admin": {
+            "type": "boolean"
+        },
+        "language": {
+            "type": "string"
+        },
+        "last_login": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "login": {
+            "type": "string"
+        },
+        "login_name": {
+            "type": "string"
+        },
+        "prohibit_login": {
+            "type": "boolean"
+        },
+        "restricted": {
+            "type": "boolean"
+        },
+        "source_id": {
+            "type": "integer"
+        },
+        "starred_repos_count": {
+            "type": "integer"
+        },
+        "username": {
+            "type": "string"
+        },
+        "visibility": {
+            "type": "string"
+        },
+        "website": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "active",
+        "avatar_url",
+        "created",
+        "description",
+        "email",
+        "followers_count",
+        "following_count",
+        "full_name",
+        "html_url",
+        "id",
+        "is_admin",
+        "language",
+        "last_login",
+        "location",
+        "login",
+        "login_name",
+        "prohibit_login",
+        "restricted",
+        "source_id",
+        "starred_repos_count",
+        "username",
+        "visibility",
+        "website"
+    ],
+    "type": "object"
+}

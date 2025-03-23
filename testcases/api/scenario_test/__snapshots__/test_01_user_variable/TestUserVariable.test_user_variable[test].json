@@ -1,0 +1,74 @@
+{
+    "properties": {
+        "properties": {
+            "properties": {
+                "data": {
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ],
+                    "type": "object"
+                },
+                "name": {
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ],
+                    "type": "object"
+                },
+                "owner_id": {
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ],
+                    "type": "object"
+                },
+                "repo_id": {
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ],
+                    "type": "object"
+                }
+            },
+            "required": [
+                "data",
+                "name",
+                "owner_id",
+                "repo_id"
+            ],
+            "type": "object"
+        },
+        "required": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "type": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "properties",
+        "required",
+        "type"
+    ],
+    "type": "object"
+}
