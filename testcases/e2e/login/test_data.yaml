@@ -1,7 +1,7 @@
 test_login:
-  username: leiju
-  password: leiju
-  aria: |
+  username: leijux
+  password: 3bv6s69.AH.TKY-
+  expect_aria: |
     - menu:
-      - img "leiju"
-      - text: leiju
+      - img "leijux"
+      - text: leijux

@@ -1,6 +1,8 @@
+import asyncio
 import base64
 import logging
 import pathlib
+import sys
 import time
 import allure
 import httpx
@@ -9,7 +11,10 @@ import pytest_asyncio
 import utils
 
 from typing import AsyncGenerator
-from utils import test_data, DataTest, env
+from utils import test_data, TestData, env
+
+# if sys.platform == 'win32':
+#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 pytest.register_assert_rewrite('utils.asserts')
 
@@ -26,7 +31,7 @@ def pytest_configure(config):
     log_file = config.getoption('--log-file') or config.getini('log_file')
     if log_file:
         config.option.log_file = rootdir / \
-            log_file.format(time.strftime("%Y%m%d"))
+                                 log_file.format(time.strftime("%Y%m%d"))
     # allure-pytest报告数据路径
     allure_report_dir = config.getoption('--alluredir')
     if allure_report_dir:
@@ -49,7 +54,7 @@ def pytest_generate_tests(metafunc):
             case_name = data.get("case_name", "test")
 
             metafunc.parametrize(
-                "test_data", [DataTest(**data)], ids=[case_name])
+                "test_data", [TestData(**data)], ids=[case_name])
         elif type(data) == list and len(data) >= 2:
             # 获取字段名（头部）和数据值（内容）
             field_names = data[0][1:]
@@ -62,7 +67,7 @@ def pytest_generate_tests(metafunc):
                 values.append(list(map(lambda x: x.format(
                     timestamp=timestamp) if type(x) == str else x, value[1:])))
             # 将数据值映射为字典列表
-            objects = [DataTest(**dict(zip(field_names, value)))
+            objects = [TestData(**dict(zip(field_names, value)))
                        for value in values]
 
             # 参数化测试

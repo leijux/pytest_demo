@@ -10,7 +10,7 @@ class LoginPage:
         self.username_label = page.get_by_label("用户名或邮箱")
         self.password_label = page.get_by_label("密码")
 
-        self.front_label=page.get_by_label("leiju - 首页")
+        self.front_label = page.get_by_label("- 首页")
 
     @allure.step("导航到登录页")
     async def navigate(self):

@@ -135,6 +135,7 @@ class RestClient:
             "params": kwargs.get("params"),
             "headers": kwargs.get("headers"),
             "cookies": kwargs.get("cookies"),
+            "files": kwargs.get("files"),
             "timeout": kwargs.get("timeout")
         }
 

@@ -1,0 +1,15 @@
+{
+    "properties": {
+        "message": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "message",
+        "url"
+    ],
+    "type": "object"
+}

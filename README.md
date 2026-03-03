@@ -1,8 +1,20 @@
 # pytest_demo
 
-本项目实现接口自动化的技术选型：**Python+Requests+Pytest+YAML+Allure** ，主要是针对本人的一个接口项目来开展的，通过 Python+Requests 来发送和处理 HTTP 协议的请求接口，使用 Pytest 作为测试执行器，使用 YAML 来管理测试数据，使用 Allure 来生成测试报告。
+本项目为 http api 和 web ui 测试的模板项目，测试对象 [gitea](https://gitea.com)
 
-> 相关接口项目：
+api 测试使用 httpx
+
+ui 测试使用 playwright
+
+> swagger：https://gitea.com/api/swagger
+
+特点：
+
+-   改进 allure step 支持 async 函数
+-   提供 json schema 快照测试
+-   allure 支持 playwright 的截图和录像
+-   测试代码和测试数据分离
+-   提供 cicd 集成脚本
 
 ## 项目说明
 
@@ -12,50 +24,47 @@
 
 当然，如果感兴趣的话，还可以再对接口自动化进行 Jenkins 持续集成。
 
-## 项目部署
-
-首先，下载项目源码后，在根目录下找到 `requirements.txt` 文件，然后通过 pip 工具安装 requirements.txt 依赖，执行命令：
-
-```
-pip3 install -r requirements.txt
-```
-
-接着，修改 `config/setting.ini` 配置文件，在 Windows 环境下，安装相应依赖之后，在命令行窗口执行命令：
-
-```
-pytest
-```
-
-**注意**：因为我这里是针对自己的接口项目进行测试，如果想直接执行我的测试用例来查看效果，需要提前部署上面提到的 [flaskDemo](https://github.com/wintests/flaskDemo) 接口项目。
-
 ## 项目结构
 
-- api 接口封装层，如封装 HTTP 接口为 Python 接口
-- utils 各种工具类
-- core requests 请求方法封装、关键字返回结果类
-- operation 关键字封装层，如把多个 Python 接口封装为关键字
-- pytest.ini pytest 配置文件
-- requirements.txt 相关依赖包文件
-- testcases 测试用例
-- .env 环境数据
-- Taskfile.yaml task 配置文件
+```txt
+├── 📁 core
+│   ├── 📄 rest_client.py  http 请求封装
+│   └── 📄 result_base.py  响应封装
+├── 📁 models
+│   ├── 📁 api             接口模型
+│   └── 📁 ui              页面模型
+├── 📁 operation           关键字封装
+├── 📁 script              工具脚本
+├── 📁 testcases           测试用例
+├── 📁 utils               工具类
+├── 📄 .env                环境变量
+├── 📄 pyproject.toml      pytest 配置和依赖管理
+└── 📄 Taskfile.yml        task 配置
+```
 
-## 关键字封装说明
+## 项目部署
 
-关键字应该是具有一定业务意义的，在封装关键字的时候，可以通过调用多个接口来完成。在某些情况下，比如测试一个充值接口的时候，在充值后可能需要调用查询接口得到最新账户余额，来判断查询结果与预期结果是否一致，那么可以这样来进行测试：
+首先，下载项目源码后，安装 [task](https://taskfile.dev/) 和 [uv](https://docs.astral.sh/uv/) 工具。
 
-- 1, 首先，可以把 **`充值-查询`** 的操作封装为一个关键字，在这个关键字中依次调用充值和查询的接口，并可以自定义关键字的返回结果。
-- 2, 接着，在编写测试用例的时候，直接调用关键字来进行测试，这时就可以拿到关键字返回的结果，那么断言的时候，就可以直接对关键字返回结果进行断言。
+```bash
+
+task install //初始化环境
+```
+
+接着，修改 `testcases` 中的 `test_data.yaml` 文件，把 username 和 password 值修改为自己的配置。
+
+```bash
+task run-all-test //运行全部测试用例
+```
 
 ## 测试报告效果展示
 
-在命令行执行命令：`pytest` 运行用例后，会得到一个测试报告的原始文件，但这个时候还不能打开成 HTML 的报告，还需要在项目根目录下，执行命令启动 `allure` 服务：
+测试用例执行完毕后会在 `reports/allure_results` 中生成原始测试报告，使用如下命令自动打开浏览器展示 html 报告。
 
-```
-# 需要提前配置allure环境，才可以直接使用命令行
-allure serve ./reports/allure_results
+```bash
+// 需要提前配置allure环境，才可以直接使用命令行
+task show-repost
 ```
 
 最终，可以看到测试报告的效果图如下：
-
-![image.png](https://upload-images.jianshu.io/upload_images/16853007-248f805c82dbf99c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![allure_report](/images/allure_report.png)

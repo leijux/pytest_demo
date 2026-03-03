@@ -1,3 +1,4 @@
+import inspect
 import json
 import time
 
@@ -13,3 +14,9 @@ def timestamp() -> int:
 
 def dict_to_csv(d: dict) -> str:
     return f"{'\n'.join([f"{key},\"{value}\"," for key, value in d.items()])}"
+
+def filter_kwargs(func, data):
+    """使用inspect模块过滤字典"""
+    sig = inspect.signature(func)
+    valid_params = sig.parameters.keys()
+    return {k: v for k, v in data.items() if k in valid_params}
