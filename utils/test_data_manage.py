@@ -1,4 +1,3 @@
-import http
 import logging
 import pytest
 import yaml
@@ -7,7 +6,6 @@ import json
 from multiprocessing import Manager
 from configparser import ConfigParser
 from typing import Optional, Dict, Any
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +86,7 @@ class DataCache:
         }[suffix.lower()]
 
 
-@dataclass
+
 class TestData:
     __test__ = False
 
@@ -118,5 +116,10 @@ class TestData:
         for key, value in data.items():
             setattr(self, key, value)
 
+    def __str__(self):
+        return f"TestData({', '.join(f'{k}={v}' for k, v in self.__dict__.items() if k != "_dict")})"
+
+    def __repr__(self):
+        return self.__str__()
 
 test_data = DataCache()
