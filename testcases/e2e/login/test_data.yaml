@@ -1,6 +1,6 @@
 test_login:
   username: leijux
-  password:
+  password: x
   expect_aria: |
     - menu:
       - img "leijux"
